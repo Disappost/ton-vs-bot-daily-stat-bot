@@ -13,29 +13,25 @@ separator = '\n\n' + '-' * 64 + '\n\n'
 
 
 def send_stat(cur, day):
+    query = '''
+                select
+                    count(*)
+                from
+                    history
+                where
+                    date("timestamp") = %s
+                    and "type" = 'bot_action'
+                    and column_0 = 'open_user'
+                    and user_id not in ({})
+            '''.format(', '.join([str(i) for i in volunteers_ids]))
     cur.execute(
-        '''
-            select
-                count(*)
-            from
-                history
-            where
-                date("timestamp") = %s
-                and "type" = 'bot_action'
-                and column_0 = 'open_user'
-                and user_id not in (
-                1168253329,
-                -- DG
-                402879150,
-                -- F
-                193824343
-                -- Tolya
-                )
-        ''',
+        query,
         [day]
     )
     query_result = cur.fetchone()
-    open_users = query_result[0]
+    open_users_count = query_result[0]
+
+    ####
 
     cur.execute(
         '''
@@ -51,7 +47,45 @@ def send_stat(cur, day):
         [day]
     )
     query_result = cur.fetchone()
-    new_users = query_result[0]
+    new_users_count = query_result[0]
+
+    ####
+
+    cur.execute(
+        '''
+            select 
+                count(*)
+            from
+                history
+            where 
+                date("timestamp") = %s
+                and "type" = 'message'
+        ''',
+        [day]
+    )
+    query_result = cur.fetchone()
+    messages_count = query_result[0]
+
+    ####
+
+    cur.execute(
+        '''
+            select 
+                count(*)
+            from
+                history
+            where 
+                date("timestamp") = %s
+                and "type" = 'message'
+                and volunteer_id isnull
+                and column_2 not like '/%%'
+        ''',
+        [day]
+    )
+    query_result = cur.fetchone()
+    messages_from_users_count = query_result[0]
+
+    ########
 
     if heroku:
         token = os.environ['bot_token']
@@ -61,11 +95,16 @@ def send_stat(cur, day):
     bot = telegram.Bot(token)
 
     message = '{}\n' \
+              '\n' \
+              'new users: {}\n' \
               'open users: {}\n' \
-              'new users: {}'.format(
+              'messages: {}\n' \
+              'messages from users: {}\n'.format(
         day,
-        open_users,
-        new_users
+        new_users_count,
+        open_users_count,
+        messages_count,
+        messages_from_users_count
     )
 
     bot.send_message(channel_chat_id, message)
@@ -99,7 +138,7 @@ def main():
                                 history
                             where
                                 date("timestamp") = %s
-                                and "type" = 'bot_action'
+                                and "type" = 'daily_stat_bot_action'
                                 and column_0 = 'daily_stat'
                         ''',
                         [day]
@@ -123,7 +162,7 @@ def main():
                                     "type",
                                     "column_0")
                                 values (%s,
-                                'bot_action',
+                                'daily_stat_bot_action',
                                 'daily_stat'
                                 )
                             ''',
