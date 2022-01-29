@@ -114,7 +114,7 @@ def main():
     passed_set = set()
 
     while True:
-        day = datetime.date.today() - datetime.timedelta(days=1)
+        day = datetime.datetime.utcnow().date() - datetime.timedelta(days=1)
 
         if day in passed_set:
             if comments_in_console:
@@ -137,7 +137,7 @@ def main():
                             from
                                 history
                             where
-                                date("timestamp") = %s
+                                "timestamp" = %s
                                 and "type" = 'daily_stat_bot_action'
                                 and column_0 = 'daily_stat'
                         ''',
