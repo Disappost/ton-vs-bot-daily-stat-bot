@@ -14,4 +14,5 @@ volunteers_ids = [
     193824343,  # Tolya
     402879150,  # F
     5144890742,  # Keqing
+    346451057,  # GoJohnny
 ]
