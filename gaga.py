@@ -129,7 +129,7 @@ def send_stat(cur, day):
         bot.send_document(
             channel_chat_id,
             document=bytes_of_image,
-            filename=f'{day}.png'
+            filename=f'{day}.jpg'
         )
     else:
         bot.send_photo(
