@@ -123,19 +123,19 @@ def send_stat(cur, day):
 
     list_of_subject_paths = [i[0] for i in query_result]
 
-    if list_of_subject_paths:
-        bytes_of_image = pie.get_pie(list_of_subject_paths, day)
+    global pie_format
 
-        bot.send_document(
-            channel_chat_id,
-            document=bytes_of_image,
-            filename=f'{day}.jpg'
-        )
+    if list_of_subject_paths:
+        document = pie.get_pie(list_of_subject_paths, day, format=pie_format)  # image in bytes
     else:
-        bot.send_photo(
-            channel_chat_id,
-            photo='AgACAgIAAxkBAAMDYpjeG0cJ2_F3_eRFyu25iKs-5H8AAr67MRuVUchI8VP48-3WO6sBAAMCAAN5AAMkBA'
-        )
+        document = 'BQACAgIAAxkBAAMGYp8ZCp65vaTiKQblTUGFJrJXey8AAgcXAAI4_PhIwK6bugpwfmgkBA'  # bublik.jpg file_id (file_unique_id: "AgADBxcAAjj8-Eg")
+        pie_format = 'jpg'
+
+    bot.send_document(
+        channel_chat_id,
+        document,
+        filename=f'{day}.{pie_format}'
+    )
 
 
 def main():

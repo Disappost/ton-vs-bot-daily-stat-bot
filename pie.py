@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 ########
 
-scale = 1.25  # 1.5
+scale = 1.25  # default 1.25
 dpi = 900
 
 labels_font_size = None  # if None label size will set automatically by my algo
@@ -125,7 +125,7 @@ def form_layers_dict(subjects_dict, layer, color_index=None, zero_layer=False):
             color_index += 1
 
 
-def get_pie(list_of_subject_paths: list, day, day1=None):
+def get_pie(list_of_subject_paths: list, day, day1=None, format='jpg'):
     new_list_of_subject_paths = []
 
     without_subject = 0
@@ -225,7 +225,7 @@ def get_pie(list_of_subject_paths: list, day, day1=None):
         plt.savefig(
             bytes_stream,
             dpi=dpi,
-            format='jpg'  # jpg, svg...
+            format=format  # jpg, svg...
         )
         image_in_bytes = bytes_stream.getvalue()
     return image_in_bytes
